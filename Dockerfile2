@@ -1,0 +1,18 @@
+FROM ros_noetic AS python
+ARG DEBIAN_FRONTEND=noninteractive
+#####################################
+# Installation of python package
+RUN apt -y update && apt -y upgrade && apt -y install \
+	git \
+	&& apt clean \
+	&& rm -rf /var/lib/apt/lists/* \
+
+FROM base_img AS ros_noetic
+ARG DEBIAN_FRONTEND=noninteractive
+#####################################
+COPY ros_noetic_install.sh /root/ros_noetic_install.sh
+RUN apt -y update && apt -y upgrade \
+	&& /root/ros_noetic_install.sh && rm /root/ros_noetic_install.sh \
+	&& apt clean \
+	&& rm -rf /var/lib/apt/lists/* 
+
