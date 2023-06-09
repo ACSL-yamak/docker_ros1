@@ -1,14 +1,15 @@
-FROM ubuntu:20.04 AS base_img
+FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 #####################################
 # Installation of frequently used tools
 RUN apt -y update && apt -y upgrade && apt -y install \
-	sudo \
 	nano \
 	git \
 	openssh-server \
 	xserver-xorg \
 	tzdata \
+	curl \
+	gnupg \
 	&& apt clean \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& ssh-keygen -A \
@@ -19,14 +20,39 @@ RUN apt -y update && apt -y upgrade && apt -y install \
 # RUN apt -y update && apt -y upgrade && apt -y install \
 # 	git \
 # 	&& apt clean \
-# 	&& rm -rf /var/lib/apt/lists/* \
+# 	&& rm -rf /var/lib/apt/lists/* 
 
-FROM base_img AS ros_noetic
-ARG DEBIAN_FRONTEND=noninteractive
+
 #####################################
-COPY ros_noetic_install.sh /root/ros_noetic_install.sh
-RUN apt -y update && apt -y upgrade \
-	&& /root/ros_noetic_install.sh && rm /root/ros_noetic_install.sh \
-	&& apt clean \
-	&& rm -rf /var/lib/apt/lists/* 
 
+
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
+&& curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - 
+
+RUN apt update -y \
+&& apt install -y \
+	ros-melodic-desktop-full \
+&& apt clean \
+&& rm -rf /var/lib/apt/lists/* 
+
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc 
+
+RUN apt update -y \
+&& apt install -y \
+	python-rosdep \
+	python-rosinstall \
+	python-rosinstall-generator \
+	python-wstool \
+	build-essential \
+	python-rosdep \
+	python-catkin-tools \
+&& rosdep init \
+&& rosdep update \
+&& apt clean \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* 
+
+RUN apt -y update && apt -y upgrade && apt -y install \
+	gnu \
+&&  apt clean \
+&&  rm -rf /var/lib/apt/lists/* 

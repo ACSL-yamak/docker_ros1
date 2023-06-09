@@ -1,9 +1,7 @@
 services:
   ros_noetic:
-    image: "tmp"
-    # container_name: "acs"
-    # privileged: true
     tty: true
+    build: .
     entrypoint: [/docker_entrypoint.sh]
     volumes:
       - "./docker_entrypoint.sh:/docker_entrypoint.sh"
@@ -14,8 +12,8 @@ services:
     #   - "/dev:/dev"
 
     # network_mode: "host"
-    ports:
-      - "3222:3222"
+    # ports:
+    #   - "3222:3222"
 # volumes:
 #   home:
 #     external: true
