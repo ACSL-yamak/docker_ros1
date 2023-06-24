@@ -5,6 +5,7 @@ echo "PermitRootLogin yes" >>/etc/ssh/sshd_config
 /usr/sbin/sshd -D &
 
 # 
+echo Ready!
 exec /bin/bash
 
 # stopping
