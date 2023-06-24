@@ -52,7 +52,33 @@ RUN apt update -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* 
 
-RUN apt -y update && apt -y upgrade && apt -y install \
-	gnu \
-&&  apt clean \
-&&  rm -rf /var/lib/apt/lists/* 
+#####################################
+RUN  apt update -y \
+&& apt install -y \
+	python-catkin-pkg \
+	python-rosdep \
+	ros-melodic-catkin \
+	python3-pip \
+	python3-colcon-common-extensions \
+	python3-setuptools \
+	python3-vcstool \
+	xfce4-terminal\
+&& pip3 install -U setuptools \
+&& apt clean \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* 
+
+RUN cd /root \
+&& mkdir -p autoware.ai/src \
+&& cd autoware.ai \
+&& wget -O autoware.ai.repos "https://raw.githubusercontent.com/autowarefoundation/autoware_ai/1.14.0/autoware.ai.repos" \
+&& vcs import src < autoware.ai.repos \
+&& apt update -y \
+&& apt install -y \
+&& rosdep update \
+&& rosdep install -y --from-paths src --ignore-src --rosdistro melodic \
+&& apt clean \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* 
+
+RUN colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
