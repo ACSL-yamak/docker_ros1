@@ -7,13 +7,7 @@ services:
       - "./docker_entrypoint.sh:/docker_entrypoint.sh"
       - "./vscode-server:/root/.vscode-server"
       - "./catkin_ws:/root/catkin_ws"
-      # - "~/ros2_ws:/home/student/ros2_ws"
-    # devices:
-    #   - "/dev:/dev"
+    devices:
+      - "/dev:/dev"
 
-    # network_mode: "host"
-    # ports:
-    #   - "3222:3222"
-# volumes:
-#   home:
-#     external: true
+    network_mode: "host"

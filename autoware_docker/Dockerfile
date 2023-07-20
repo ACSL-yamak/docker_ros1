@@ -2,20 +2,23 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 #####################################
 # Installation of frequently used tools
-RUN apt -y update && apt -y upgrade && apt -y install \
-	nano \
-	git \
-	openssh-server \
-	xserver-xorg \
-	tzdata \
-	curl \
-	gnupg \
-	&& apt clean \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& ssh-keygen -A \
-	&& mkdir -p /run/sshd \
-	&& echo "Port 3222" >> /etc/ssh/sshd_config \
-	&& cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+RUN apt update -y \
+&& apt upgrade -y \
+&& apt install -y\
+  curl \
+  git \
+  gnupg \
+  nano \
+  openssh-server \
+  sudo \
+  tzdata \
+  udev \
+  xserver-xorg \
+&& apt clean \
+&& rm -rf /var/lib/apt/lists/* \
+&& ssh-keygen -A \
+&& mkdir -p /run/sshd \
+&& cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
 # RUN apt -y update && apt -y upgrade && apt -y install \
 # 	git \
@@ -24,7 +27,7 @@ RUN apt -y update && apt -y upgrade && apt -y install \
 
 
 #####################################
-
+# Install of ROS melodic
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
 && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - 
@@ -63,10 +66,15 @@ RUN  apt update -y \
 	python3-setuptools \
 	python3-vcstool \
 	xfce4-terminal\
+	gnome-terminal \
+	python-catkin-tools\
 && pip3 install -U setuptools \
 && apt clean \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* 
+
+##########################################
+# Install of Autoware Ai
 
 RUN cd /root \
 && mkdir -p autoware.ai/src \
@@ -75,7 +83,7 @@ RUN cd /root \
 && vcs import src < autoware.ai.repos \
 && apt update -y \
 && apt install -y \
-&& rosdep update \
+&& rosdep update --include-eol-distros\
 && rosdep install -y --from-paths src --ignore-src --rosdistro melodic \
 && apt clean \
 && apt-get clean \
