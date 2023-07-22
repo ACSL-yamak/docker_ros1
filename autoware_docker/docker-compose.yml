@@ -2,25 +2,23 @@ services:
   ros_noetic:
     tty: true
     build: .
-    privileged: true
-    image: autoware_wheelchair:cpu
+    image: autoware_wheelchair:gpu
     entrypoint: ["/docker/entrypoint.sh"]
     volumes:
       - "./scripts:/docker"
       - "./vscode-server:/root/.vscode-server"
       - "./catkin_ws:/root/catkin_ws"
-    devices:
       - "/dev:/dev"
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw # for GPU graphic
+    environment: 
+      - DISPLAY  # for GPU graphic
 
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    # runtime: nvidia
-    runtime: nvidia
-
+    deploy: 
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
     network_mode: "host"
